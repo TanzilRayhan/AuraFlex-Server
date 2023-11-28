@@ -2,6 +2,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const app = express();
+
 const port = process.env.PORT || 5001;
 require('dotenv').config();
 
@@ -25,7 +26,55 @@ async function run() {
   try {
     await client.connect();
 
+    const userCollection = client.db("auraFlexDB").collection("users");
     const trainerCollection = client.db("auraFlexDB").collection("trainer");
+    const featureCollection = client.db("auraFlexDB").collection("feature");
+
+    //user API
+    app.get("/users", async (req, res)=>{
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+    app.post("/users", async (req, res)=>{
+      const user = req.body;
+      //insert email if user doesn't exists
+      const query = {email: user.userEmail}
+      const existingUser = await userCollection.findOne(query);
+      if(existingUser){
+        return res.send({message: 'user already exists', insertedId: null})
+      }
+      const result = await userCollection.insertOne(user);
+      console.log(result);
+      res.send(result);
+    })
+
+    app.patch("/users/admin/:id", async (req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set: {
+          role: 'admin'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    })
+
+    app.delete("/users/:id", async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
+    //features
+    app.get("/feature", async (req, res)=>{
+      const cursor = featureCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
     //trainers
     app.get("/trainer", async (req, res)=>{
