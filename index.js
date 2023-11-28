@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    //await client.connect();
 
     const userCollection = client.db("auraFlexDB").collection("users");
     const trainerCollection = client.db("auraFlexDB").collection("trainer");
@@ -160,8 +160,8 @@ async function run() {
     })
 
     //send ping
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
 
   }
