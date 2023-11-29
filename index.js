@@ -32,6 +32,7 @@ async function run() {
     const galleryCollection = client.db("auraFlexDB").collection("gallery");
     const subscriberCollection = client.db("auraFlexDB").collection("subscriber");
     const classCollection = client.db("auraFlexDB").collection("class");
+    const forumCollection = client.db("auraFlexDB").collection("forum");
 
     // JWT API
     app.post("/jwt", async (req, res) => {
@@ -152,6 +153,19 @@ async function run() {
       console.log(result);
       res.send(result);
     })
+      //forums
+      app.get("/forum", async (req, res) => {
+        const cursor = forumCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+      })
+  
+      app.post("/forum", async (req, res) => {
+        const forums = req.body;
+        const result = await forumCollection.insertOne(forums);
+        console.log(result);
+        res.send(result);
+      })
 
 
     //subscribers
@@ -187,6 +201,18 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await trainerCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.patch("/trainer/trainer/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          role: 'trainer'
+        }
+      }
+      const result = await trainerCollection.updateOne(filter, updatedDoc);
       res.send(result);
     })
 
