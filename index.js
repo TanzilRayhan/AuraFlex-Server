@@ -30,6 +30,8 @@ async function run() {
     const trainerCollection = client.db("auraFlexDB").collection("trainer");
     const featureCollection = client.db("auraFlexDB").collection("feature");
     const galleryCollection = client.db("auraFlexDB").collection("gallery");
+    const subscriberCollection = client.db("auraFlexDB").collection("subscriber");
+    const classCollection = client.db("auraFlexDB").collection("class");
 
     // JWT API
     app.post("/jwt", async (req, res) => {
@@ -134,6 +136,35 @@ async function run() {
     app.get("/gallery", async (req, res) => {
       const cursor = galleryCollection.find();
       const result = await cursor.toArray();
+      res.send(result);
+    })
+
+     //classes
+     app.get("/class", async (req, res) => {
+      const cursor = classCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.post("/class", async (req, res) => {
+      const classes = req.body;
+      const result = await classCollection.insertOne(classes);
+      console.log(result);
+      res.send(result);
+    })
+
+
+    //subscribers
+    app.get("/subscriber", async (req, res) => {
+      const cursor = subscriberCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.post("/subscriber", async (req, res) => {
+      const subscriber = req.body;
+      const result = await subscriberCollection.insertOne(subscriber);
+      console.log(result);
       res.send(result);
     })
 
